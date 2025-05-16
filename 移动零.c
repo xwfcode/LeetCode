@@ -12,6 +12,8 @@ int main()
     }
 	return 0;
 }
+
+//法一：
 void moveZeroes(int* nums, int numsSize) {
     int zero = 0;//标记最前面的0的下标
     for (int p = 0; p < numsSize; p++)
@@ -24,6 +26,48 @@ void moveZeroes(int* nums, int numsSize) {
             nums[zero] = nums[p];
             nums[p] = temp;
             zero++;
+        }
+    }
+}
+
+//法二：记录偏移量法
+void moveZeroes(int* nums, int numsSize) {
+    int offset = 0;
+    for(int i = 0; i < numsSize; i++)
+    {
+        if(nums[i] == 0)
+        {
+            offset++;
+        }
+        else if(nums[i] != 0)
+        {
+            int temp;
+            temp = nums[i-offset];
+            nums[i-offset] = nums[i];
+            nums[i] = temp;
+        }
+    }
+}
+
+//法三：不太会的方法
+void moveZeroes(int* nums, int numsSize) {
+    int l = 0;
+    int r = 0;
+    while(r < numsSize)
+    {
+        if(r == l || nums[r] == 0) //确保r在l的右边
+        {
+            r++;
+        }
+        else if(nums[l] != 0)
+        {
+            l++;
+        }
+        else //出现这个情况就是l走到了第一个零的下标，r走到了第一个零右边的第一个非零元素的下标
+        {
+            int temp = nums[l];
+            nums[l] = nums[r];
+            nums[r] = temp;
         }
     }
 }
