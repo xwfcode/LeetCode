@@ -1,0 +1,56 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+//  1、有环，快慢指针一定会相遇
+// 如果有环，fast肯定比slow先进入环。当fast进环后slow进环前，fast在环内兜圈子。
+// 当slow进入环后，就是fast追赶slow的问题，由于fast比slow快，【两指针每走一次，fast就离slow更近一步】，最终肯定能在环上追上。
+
+// 2、快慢指针相遇时，slow指针没有走完环的一圈
+// 假设环的长度为n，在slow指针进环时（slow在环入口），fast离slow最大距离为n-1，快慢指针每移动一次，fast就离slow更近一步，所以最多最多n-1次fast就会追上slow，此时slow才走了n-1步。所以在slow还没走完一圈的时候，肯定会被追上。
+
+// 3、fast追上slow的时候，fast肯定在环内至少走了一圈
+// 在slow进环之前，fast先进入环，已经经过了环入口。slow后进环，fast想追上slow至少至少也得超slow一圈，最快也得在下次经过环入口时相遇。（联想跑步，要追上后面的人，至少得领先他一圈）
+
+// 4、当相遇之后，index1从链表起点出发，index2从相遇点出发，最终index1和index2一定会在环入口相遇
+// 记 链表起点--->环入口 长度为 a
+// 环入口 --->相遇点 长度为 b 即此时慢指针走了 a+b
+// 相遇点 --->环入口 长度为 c
+
+// 当slow指针走到环入口时：slow指针走了a，则fast指针走了2a,即在环内走了a
+// 当slow指针与fast指针相遇时：slow指针在环内走了b,则fast指针在环内总共走了a+2b
+// 而fast指针肯定是比slow走了多n圈。 即有等式：a+2b=b+n(b+c) -->a+b=n(b+c)
+// 由【3】知 n>=1 则有关系 a+b=(n-1)(b+c)+b+c ----> 【 a=(n-1)(b+c)+c】
+
+// 可知，若index1从链表起点出发，index2从相遇点出发，都是一次走一步
+// 当index1走了a走到环入口时，index2会走a=(n-1)(b+c)+c步，即走c步到环入口，再转了n-1圈，最终还是在环入口处
+
+// 综上：index1 和index2 一定会在环入口处相遇
+struct ListNode *detectCycle(struct ListNode *head) {
+    if((head == NULL) || (head->next == NULL))
+    {
+        return false;
+    }
+    struct ListNode* fast = head;
+    struct ListNode* slow = head;
+    while((fast != NULL) && (fast->next != NULL))
+    {
+        fast = fast->next->next;
+        slow = slow->next;
+        if(slow == fast)
+        {
+            struct ListNode* index1 = head;
+            struct ListNode* index2 = slow;
+            while(index1 != index2)
+            {
+                index1 = index1->next;
+                index2 = index2->next;
+            }
+            return index1;
+        }
+    }
+    return false;
+}
